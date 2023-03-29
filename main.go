@@ -85,6 +85,9 @@ func main() {
 		log.Fatalf("error: type %q not found\n", *typeName)
 	}
 
+	buf.WriteString("// this is a generated file, please don't edit it by hand \n")
+	buf.WriteString(fmt.Sprintf("package %s\n", pkg.Name))
+
 	for _, f := range pkg.Syntax {
 		ast.Inspect(f, func(node ast.Node) bool {
 			// Look for a type definition with the given name.
@@ -121,7 +124,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	filename := fmt.Sprintf("%s_gen.go", *typeName)
+	filename := fmt.Sprintf("%s_gen.go", strings.ToLower(*typeName))
 	path := filepath.Join(dir, filename)
 	file, err := os.Create(path)
 	if err != nil {

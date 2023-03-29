@@ -1,8 +1,11 @@
-package examples
+package main
 
-// go run out/greterator -type=Config .
-type Config struct {
-	Env   string
-	Paths []string
-	ID    int
+import (
+	"examples/config"
+	_ "examples/utils"
+)
+
+func main() {
+	var cfg = config.Config{}
+	_ = cfg
 }

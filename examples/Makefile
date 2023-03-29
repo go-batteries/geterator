@@ -1,0 +1,3 @@
+generate:
+	go generate ./...
+	go build -o /tmp/main .
