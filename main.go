@@ -53,7 +53,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var buf = bytes.Buffer{}
 	var pkg *packages.Package
 
 	for _, p := range pkgs {
@@ -85,8 +84,10 @@ func main() {
 		log.Fatalf("error: type %q not found\n", *typeName)
 	}
 
+	var buf = bytes.Buffer{}
 	buf.WriteString("// this is a generated file, please don't edit it by hand \n")
 	buf.WriteString(fmt.Sprintf("package %s\n", pkg.Name))
+
 
 	for _, f := range pkg.Syntax {
 		ast.Inspect(f, func(node ast.Node) bool {
@@ -115,6 +116,7 @@ func main() {
 					return false
 				}
 			}
+
 			return true
 		})
 	}
