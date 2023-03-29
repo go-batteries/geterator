@@ -16,6 +16,7 @@ type Foo struct {
 type Bar struct {
         Drinks []int
         Namer  Foo
+        hidden bool
 }
 
 ```
@@ -40,6 +41,14 @@ func (c Bar) GetNamer() Foo {
 ```
 
 Right now the limitation is it creates one file per struct. Maybe I will find a way out.
+
+
+By default `unexported` fields in the struct are not exposed. But can be exposed by using the `-private flag`
+
+```go
+//go:generate go run github.com/go-batteries/geterator -type=Bar -private
+```
+
 
 TODO:
 
