@@ -40,3 +40,38 @@ func (c Bar) GetNamer() Foo {
 ```
 
 Right now the limitation is it creates one file per struct. Maybe I will find a way out.
+
+TODO:
+
+Instead of ast.Inspect and direct looping, find a way to get all the `//go:generate ` in the file and spit out one generated file.
+
+```go
+
+// something like
+/*
+   var files []*ast.File
+   typeMap := make(map[string]*ast.TypeSpec)
+
+   for _, pkg := range pkgs {
+        for _, file := range pkg.Syntax {
+                for _, decl := range file.Decls {
+                        genDecl, ok := decl.(*ast.GenDecl)
+                        if !ok || genDecl.Tok != token.TYPE {
+                           continue
+                        }        
+
+           for _, spec := range genDecl.Specs {
+                   if typeSpec, ok := spec.(*ast.TypeSpec); ok {
+                           typeName := typeSpec.Name.String()
+                           if contains(typeNameList, typeName) {
+                                   typeMap[typeName] = typeSpec
+                                   files = append(files, file)
+                           }
+                   }
+           }
+
+        }
+   }
+   }
+*/
+```

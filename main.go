@@ -66,15 +66,19 @@ func main() {
 				if typeSpec, ok := node.(*ast.TypeSpec); ok {
 					if typeSpec.Name.Name == *typeName {
 						pkg = p
-						return false
+						return false // we found a match. so skipping rest.
 					}
 				}
 				return true
 			})
+
+			// we found the desired package of the struct.
+			// so process the declarations now
 			if pkg != nil {
 				break
 			}
 		}
+
 		if pkg != nil {
 			break
 		}
@@ -88,32 +92,32 @@ func main() {
 	buf.WriteString("// this is a generated file, please don't edit it by hand \n")
 	buf.WriteString(fmt.Sprintf("package %s\n", pkg.Name))
 
-
 	for _, f := range pkg.Syntax {
 		ast.Inspect(f, func(node ast.Node) bool {
 			// Look for a type definition with the given name.
 			if typeSpec, ok := node.(*ast.TypeSpec); ok {
-				if typeSpec.Name.Name == *typeName {
-					// Generate getters for the fields of the struct.
-					if structType, ok := typeSpec.Type.(*ast.StructType); ok {
-						for _, field := range structType.Fields.List {
-							// Skip unexported fields.
-							if field.Names == nil {
-								continue
-							}
-
-							fieldName := field.Names[0].Name
-							fieldType := exprToString(field.Type)
-
-							buf.WriteString(
-								fmt.Sprintf("func (c %s) Get%s() %s {\n", *typeName, strings.Title(fieldName), fieldType),
-							)
-							buf.WriteString(fmt.Sprintf("return c.%s\n", fieldName))
-							buf.WriteString("}\n")
-						}
-					}
-
+				// if the struct name is not the same, skip it
+				if typeSpec.Name.Name != *typeName {
 					return false
+				}
+
+				// Generate getters for the fields of the struct.
+				if structType, ok := typeSpec.Type.(*ast.StructType); ok {
+					for _, field := range structType.Fields.List {
+						// Skip unexported fields.
+						if field.Names == nil {
+							continue
+						}
+
+						fieldName := field.Names[0].Name
+						fieldType := exprToString(field.Type)
+
+						buf.WriteString(
+							fmt.Sprintf("func (c %s) Get%s() %s {\n", *typeName, strings.Title(fieldName), fieldType),
+						)
+						buf.WriteString(fmt.Sprintf("return c.%s\n", fieldName))
+						buf.WriteString("}\n")
+					}
 				}
 			}
 
